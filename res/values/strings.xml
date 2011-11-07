@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+ 
+    <string name="app_name">番茄计时</string>
+    <string name="bg_color">#FFFFFF</string>
+    <string name="bt_start">开始</string>
+    <string name="bt_stop">停止</string>
+    <string name="dialog_title">提示</string>
+    <string name="dialog_msg">您确定要退出吗?</string>
+    <string name="dialog_yes">确定</string>
+    <string name="dialog_no">取消</string>
+    <string name="menu_task">任务</string>
+    <string name="menu_setting">设置</string>
+    <string name="menu_about">关于</string>
+</resources>
