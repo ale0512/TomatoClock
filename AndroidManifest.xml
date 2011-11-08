@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- installLocation有三个值可以选择：internalOnly、auto、preferExternal 选择preferExternal,系统会优先考虑将APK安装到SD卡上(当然最终用户可以选择为内部ROM存储上，如果SD存储已满，也会安装到内部存储上) 
+	选择auto，系统将会根据存储空间自己去适应 选择internalOnly是指必须安装到内部才能运行 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.ale.tomato" android:versionCode="1" android:versionName="1.0">
+	package="org.ale.tomato" android:versionCode="1" android:versionName="1.0"
 
-
-	<application android:icon="@drawable/icon" android:label="@string/app_name">
+	android:installLocation="auto">
+	<application android:allowClearUserData="true"
+		android:allowTaskReparenting="true" android:icon="@drawable/icon"
+		android:label="@string/app_name">
 		<activity android:name="org.ale.tomato.TomatoClock"
 			android:label="@string/app_name">
 			<intent-filter>
@@ -15,5 +19,5 @@
 	</application>
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="8"
 		android:maxSdkVersion="8" />
-	
+
 </manifest>
