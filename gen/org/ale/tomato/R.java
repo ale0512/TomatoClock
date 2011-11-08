@@ -17,16 +17,21 @@ public final class R {
         public static final int white=0x7f050003;
     }
     public static final class drawable {
-        public static final int button_focused=0x7f020000;
-        public static final int button_normal=0x7f020001;
-        public static final int button_pressed=0x7f020002;
-        public static final int icon=0x7f020003;
-        public static final int submit=0x7f020004;
+        public static final int bg=0x7f020000;
+        public static final int button_focused=0x7f020001;
+        public static final int button_normal=0x7f020002;
+        public static final int button_pressed=0x7f020003;
+        public static final int green=0x7f020004;
+        public static final int icon=0x7f020005;
+        public static final int red=0x7f020006;
+        public static final int submit=0x7f020007;
     }
     public static final class id {
-        public static final int bt_start=0x7f070001;
-        public static final int bt_stop=0x7f070002;
-        public static final int individual_time_remaining=0x7f070000;
+        public static final int bt_start=0x7f070003;
+        public static final int bt_stop=0x7f070004;
+        public static final int frameLayout1=0x7f070000;
+        public static final int imageRed=0x7f070001;
+        public static final int individual_time_remaining=0x7f070002;
     }
     public static final class layout {
         public static final int main=0x7f030000;

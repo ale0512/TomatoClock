@@ -26,8 +26,7 @@ import android.widget.TextView;
 public class TomatoClock extends Activity implements OnClickListener {
 	private Timer timer = null;
 
-	// 剩余的个人秒
-	private int remainingIndividualSeconds = 0;
+	
 	// 警告时间
 	private int warningTime = 0;
 	// 当前个人身份秒
@@ -38,12 +37,22 @@ public class TomatoClock extends Activity implements OnClickListener {
 	/**
 	 * 默认工作时间25 分钟
 	 */
-	protected static final Integer WORK_DEFAULT = 1;
+	protected static final Integer WORK_DEFAULT = 25;
 
 	/**
 	 * 默认放松时间5分钟
 	 */
 	protected static final Integer RELAX_DEFAULT = 5;
+
+	/**
+	 * 工作模式
+	 */
+	protected static final Integer WORK_MODEL = 0;
+
+	/**
+	 * 休息模式
+	 */
+	protected static final Integer RELAX_MODEL = 1;
 
 	/**
 	 * 工作时间
@@ -54,6 +63,11 @@ public class TomatoClock extends Activity implements OnClickListener {
 	 * 放松时间
 	 */
 	private Integer relax = 0;
+
+	/**
+	 * 当前工作模式，默认为工作模式
+	 */
+	private Integer currentModel = 0;
 	/**
 	 * 个人秒开始
 	 */
@@ -136,8 +150,10 @@ public class TomatoClock extends Activity implements OnClickListener {
 		// chr.stop();
 
 		TextView totalTimeRemaining = (TextView) findViewById(R.id.individual_time_remaining);
-		Logger.d("剩余时间：" + remainingMeetingSeconds);
-		totalTimeRemaining.setText(TimeFormatHelper.formatTime(remainingMeetingSeconds));
+		// Logger.d("剩余时间：" + remainingMeetingSeconds);
+		String cs = TimeFormatHelper.formatTime(remainingMeetingSeconds);
+		Logger.d("剩余时间" + cs);
+		totalTimeRemaining.setText(cs);
 		totalTimeRemaining.setTextColor(TimeFormatHelper.determineColor(remainingMeetingSeconds, warningTime));
 	}
 
@@ -169,17 +185,17 @@ public class TomatoClock extends Activity implements OnClickListener {
 	}
 
 	protected synchronized void updateTimerValues() {
-		
+
 		currentIndividualStatusSeconds++;
-		if (remainingMeetingSeconds > 0){
+		if (remainingMeetingSeconds > 0) {
 			remainingMeetingSeconds--;
-			if(remainingMeetingSeconds==0){
+			if (remainingMeetingSeconds == 0) {
 				Logger.d("Playing the airhorn sound");
 				Logger.d("Timer is End");
 				workFinish();
 			}
 		}
-			
+
 		updateDisplayHandler.sendEmptyMessage(0);
 
 	}
@@ -226,18 +242,6 @@ public class TomatoClock extends Activity implements OnClickListener {
 
 	}
 
-	/**
-	 * 禁用个人定时器
-	 */
-	protected synchronized void disableIndividualTimer() {
-		Logger.d("Disabling the individual timer");
-
-		remainingIndividualSeconds = 0;
-		TextView individualTimeRemaining = (TextView) findViewById(R.id.individual_time_remaining);
-		individualTimeRemaining.setText(TimeFormatHelper.formatTime(remainingIndividualSeconds));
-		individualTimeRemaining.setTextColor(Color.GRAY);
-	}
-
 	private void initializeTimer() {
 		work = WORK_DEFAULT;
 		relax = RELAX_DEFAULT;
@@ -256,12 +260,23 @@ public class TomatoClock extends Activity implements OnClickListener {
 
 	protected synchronized void loadState(int meetingLength) {
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		remainingMeetingSeconds = preferences.getInt(REMAINING_MEETING_SECONDS, (meetingLength * 30));
+		remainingMeetingSeconds = preferences.getInt(REMAINING_MEETING_SECONDS, (meetingLength * 1));
 		Logger.d("remainingMeetingSeconds:" + remainingMeetingSeconds);
-		
+
 	}
 
 	protected void workFinish() {
 		Logger.d("Work Finish");
+		// 判断当前工作模式
+		if (currentModel == WORK_MODEL) {// 当前为工作模式，切换到休息模式
+			relax = RELAX_DEFAULT;
+			currentModel = RELAX_MODEL;
+			loadState(relax);
+		} else if (currentModel == RELAX_MODEL) {// 当前为休息模式，切换到工作模式
+			work = WORK_DEFAULT;
+			currentModel = WORK_MODEL;
+			loadState(work);
+		}
+		cancelTimer();
 	}
 }
