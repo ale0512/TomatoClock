@@ -152,7 +152,6 @@ public class TomatoClock extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				updateTimerValues();
-
 			}
 		};
 		timer.schedule(updateTimerValuesTask, 1000, 1000);
@@ -170,23 +169,17 @@ public class TomatoClock extends Activity implements OnClickListener {
 	}
 
 	protected synchronized void updateTimerValues() {
-
+		
 		currentIndividualStatusSeconds++;
-
-		if (remainingIndividualSeconds > 0) {
-			remainingIndividualSeconds--;
-
-			if (remainingIndividualSeconds == 0) {// 计时结束
+		if (remainingMeetingSeconds > 0){
+			remainingMeetingSeconds--;
+			if(remainingMeetingSeconds==0){
 				Logger.d("Playing the airhorn sound");
 				Logger.d("Timer is End");
-
 				workFinish();
 			}
-
 		}
-
-		if (remainingMeetingSeconds > 0)
-			remainingMeetingSeconds--;
+			
 		updateDisplayHandler.sendEmptyMessage(0);
 
 	}
@@ -240,18 +233,9 @@ public class TomatoClock extends Activity implements OnClickListener {
 		Logger.d("Disabling the individual timer");
 
 		remainingIndividualSeconds = 0;
-
-		// TextView participantNumber = (TextView)
-		// findViewById(R.id.participant_number);
-		// participantNumber.setText(R.string.individual_status_complete);
-
 		TextView individualTimeRemaining = (TextView) findViewById(R.id.individual_time_remaining);
 		individualTimeRemaining.setText(TimeFormatHelper.formatTime(remainingIndividualSeconds));
 		individualTimeRemaining.setTextColor(Color.GRAY);
-
-		// Button nextButton = (Button) findViewById(R.id.next_button);
-		// nextButton.setClickable(false);
-		// nextButton.setTextColor(Color.GRAY);
 	}
 
 	private void initializeTimer() {
@@ -271,34 +255,13 @@ public class TomatoClock extends Activity implements OnClickListener {
 	}
 
 	protected synchronized void loadState(int meetingLength) {
-		// warningTime = Prefs.getWarningTime(this);
-
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		// totalParticipants = preferences.getInt(TOTAL_PARTICIPANTS,
-		// numParticipants);
-		remainingMeetingSeconds = preferences.getInt(REMAINING_MEETING_SECONDS, (meetingLength * 60));
+		remainingMeetingSeconds = preferences.getInt(REMAINING_MEETING_SECONDS, (meetingLength * 30));
 		Logger.d("remainingMeetingSeconds:" + remainingMeetingSeconds);
-		// remainingIndividualSeconds =
-		// preferences.getInt(REMAINING_INDIVIDUAL_SECONDS,
-		// startingIndividualSeconds);
-		// completedParticipants = preferences.getInt(COMPLETED_PARTICIPANTS,
-		// 0);
-		// currentIndividualStatusSeconds =
-		// preferences.getInt(CURRENT_INDIVIDUAL_STATUS_SECONDS, 0);
-		// meetingStartTime = preferences.getLong(MEETING_START_TIME,
-		// System.currentTimeMillis());
-		// individualStatusEndTime =
-		// preferences.getLong(INDIVIDUAL_STATUS_END_TIME, 0);
-		// quickestStatus = preferences.getInt(QUICKEST_STATUS,
-		// Integer.MAX_VALUE);
-		// longestStatus = preferences.getInt(LONGEST_STATUS, 0);
-		//
-		// // team = Team.findByName(getIntent().getStringExtra("teamName"),
-		// this);
-		// individualStatusStartTime = meetingStartTime;
+		
 	}
 
 	protected void workFinish() {
-
+		Logger.d("Work Finish");
 	}
 }
