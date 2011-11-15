@@ -15,18 +15,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class TomatoClock extends Activity implements OnClickListener {
 	private Timer timer = null;
 
-	
 	// 警告时间
 	private int warningTime = 0;
 	// 当前个人身份秒
@@ -110,6 +112,12 @@ public class TomatoClock extends Activity implements OnClickListener {
 	 * 最长的
 	 */
 	protected static final String LONGEST_STATUS = "longestStatus";
+
+	private Handler handler = null;
+
+	private Button buttonStart = null;
+	
+	private ImageView tomato = null;
 	private Handler updateDisplayHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -120,9 +128,10 @@ public class TomatoClock extends Activity implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		handler = new Handler();
 		setContentView(R.layout.main);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
+		buttonStart = (Button) this.findViewById(R.id.bt_start);
 		// initializeTimerValues();
 		initializeTimer();
 		initializeButtonListeners();
@@ -146,11 +155,7 @@ public class TomatoClock extends Activity implements OnClickListener {
 	 * 更新显示
 	 */
 	protected synchronized void updateDisplay() {
-		Logger.d("更新显示");
-		// chr.stop();
-
 		TextView totalTimeRemaining = (TextView) findViewById(R.id.individual_time_remaining);
-		// Logger.d("剩余时间：" + remainingMeetingSeconds);
 		String cs = TimeFormatHelper.formatTime(remainingMeetingSeconds);
 		Logger.d("剩余时间" + cs);
 		totalTimeRemaining.setText(cs);
@@ -215,11 +220,12 @@ public class TomatoClock extends Activity implements OnClickListener {
 		case R.id.bt_start:
 			Logger.d("点击开始按钮");
 			startTimer();
+			toggleButton(buttonStart);
 			break;
 		case R.id.bt_stop:
 			Logger.d("停止计时");
 			cancelTimer();
-
+			//toggleButton(R.id.bt_start);
 			break;
 		}
 	}
@@ -278,5 +284,39 @@ public class TomatoClock extends Activity implements OnClickListener {
 			loadState(work);
 		}
 		cancelTimer();
+		handler.post(toggleStartButton);
+	}
+
+	Runnable toggleStartButton = new Runnable() {
+		@Override
+		public void run() {
+			// 更新界面
+			toggleButton(buttonStart);
+		}
+
+	};
+
+	protected void toggleButton(Button button) {
+		 
+		// 获得当前按钮的状态
+		if (button.isEnabled()) {
+			// 表示当前可以点击，需要设置为不能点击
+			Logger.d("当前按钮可以点击");
+			button.setEnabled(false);
+			button.setBackgroundResource(R.drawable.button_dsiable);
+			//button.setTextColor(R.color.button_disable_text);
+		} else {// 表示当前不能点击，需要设置为可以点击
+			Logger.d("当前按钮不能点击，设置按钮字体颜色:"+R.color.white);
+		//	button.setTextColor(R.color.red);
+			button.setBackgroundResource(R.drawable.button_normal);
+			button.setEnabled(true);
+		}
+	}
+	protected void toggleTomato(ImageView tomato){
+		
+	}
+	protected void hiddenButton(Integer buttonId) {
+		Button button = (Button) this.findViewById(buttonId);
+		button.setVisibility(View.INVISIBLE);
 	}
 }
