@@ -26,9 +26,9 @@
 			android:background="@drawable/submit" android:textColor="@color/white"
 			android:width="72dp" android:height="40dp"></Button>
 
-		<Button android:text="@string/bt_stop" android:id="@+id/bt_stop"
+		<!-- <Button android:text="@string/bt_stop" android:id="@+id/bt_stop"
 			android:layout_gravity="center" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:background="@drawable/submit" android:enabled="true"
-			android:textColor="@color/white" android:width="72dp" android:height="40dp"></Button>
+			android:textColor="@color/white" android:width="72dp" android:height="40dp"></Button> -->
 	</LinearLayout>
 </LinearLayout>

@@ -3,6 +3,8 @@ package org.ale.tomato;
 import java.util.Timer;
 import java.util.TimerTask;
 
+ 
+
 import org.ale.tomato.log.Logger;
 import org.ale.tomato.util.TimeFormatHelper;
 
@@ -11,6 +13,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -116,8 +119,11 @@ public class TomatoClock extends Activity implements OnClickListener {
 	private Handler handler = null;
 
 	private Button buttonStart = null;
-	
+
 	private ImageView tomato = null;
+
+	private static MediaPlayer chime = null;
+ 
 	private Handler updateDisplayHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -132,9 +138,11 @@ public class TomatoClock extends Activity implements OnClickListener {
 		setContentView(R.layout.main);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		buttonStart = (Button) this.findViewById(R.id.bt_start);
+		tomato = (ImageView) this.findViewById(R.id.imageRed);
 		// initializeTimerValues();
 		initializeTimer();
 		initializeButtonListeners();
+		initializeSounds();
 		updateDisplay();
 
 	}
@@ -222,11 +230,11 @@ public class TomatoClock extends Activity implements OnClickListener {
 			startTimer();
 			toggleButton(buttonStart);
 			break;
-		case R.id.bt_stop:
-			Logger.d("停止计时");
-			cancelTimer();
-			//toggleButton(R.id.bt_start);
-			break;
+		// case R.id.bt_stop:
+		// Logger.d("停止计时");
+		// cancelTimer();
+		// // toggleButton(R.id.bt_start);
+		// break;
 		}
 	}
 
@@ -259,9 +267,18 @@ public class TomatoClock extends Activity implements OnClickListener {
 		// 开始
 		btStart.setOnClickListener(this);
 		// 停止
-		View btStop = this.findViewById(R.id.bt_stop);
-		btStop.setOnClickListener(this);
+		// View btStop = this.findViewById(R.id.bt_stop);
+		// btStop.setOnClickListener(this);
 
+	}
+
+	private void initializeSounds() {
+		if (chime == null) {
+			Logger.d("Loading the bell sound");
+			chime = MediaPlayer.create(this, R.raw.chime);
+		}
+
+		 
 	}
 
 	protected synchronized void loadState(int meetingLength) {
@@ -278,13 +295,16 @@ public class TomatoClock extends Activity implements OnClickListener {
 			relax = RELAX_DEFAULT;
 			currentModel = RELAX_MODEL;
 			loadState(relax);
+			playFinishedSound();
 		} else if (currentModel == RELAX_MODEL) {// 当前为休息模式，切换到工作模式
 			work = WORK_DEFAULT;
 			currentModel = WORK_MODEL;
 			loadState(work);
+			playFinishedSound();
 		}
 		cancelTimer();
 		handler.post(toggleStartButton);
+		handler.post(toggleTomato);
 	}
 
 	Runnable toggleStartButton = new Runnable() {
@@ -295,28 +315,53 @@ public class TomatoClock extends Activity implements OnClickListener {
 		}
 
 	};
+	Runnable toggleTomato = new Runnable() {
+
+		@Override
+		public void run() {
+			toggleTomato(tomato);
+		}
+
+	};
 
 	protected void toggleButton(Button button) {
-		 
+
 		// 获得当前按钮的状态
 		if (button.isEnabled()) {
 			// 表示当前可以点击，需要设置为不能点击
 			Logger.d("当前按钮可以点击");
 			button.setEnabled(false);
 			button.setBackgroundResource(R.drawable.button_dsiable);
-			//button.setTextColor(R.color.button_disable_text);
+			button.setTextColor(R.color.button_disable_text);
 		} else {// 表示当前不能点击，需要设置为可以点击
-			Logger.d("当前按钮不能点击，设置按钮字体颜色:"+R.color.white);
-		//	button.setTextColor(R.color.red);
+			// Logger.d("当前按钮不能点击，设置按钮字体颜色:"+R.color.white);
+			button.setTextColor(R.color.white);
 			button.setBackgroundResource(R.drawable.button_normal);
 			button.setEnabled(true);
 		}
 	}
-	protected void toggleTomato(ImageView tomato){
-		
+
+	protected void toggleTomato(ImageView tomato) {
+		if (currentModel == WORK_MODEL) {
+			tomato.setImageResource(R.drawable.red);
+		} else if (currentModel == RELAX_MODEL) {
+			tomato.setImageResource(R.drawable.green);
+		}
+
 	}
+
 	protected void hiddenButton(Integer buttonId) {
 		Button button = (Button) this.findViewById(buttonId);
 		button.setVisibility(View.INVISIBLE);
+	}
+	
+	 
+	protected void playFinishedSound() {
+		playSound(chime);
+	}
+
+	private void playSound(MediaPlayer mp) {
+		mp.seekTo(0);
+		mp.start();
 	}
 }
